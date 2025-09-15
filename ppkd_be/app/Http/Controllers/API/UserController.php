@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Psy\CodeCleaner\ReturnTypePass;
 
 class UserController extends Controller
@@ -110,7 +111,7 @@ class UserController extends Controller
             $user->name = $request->name;
             if ($request->filled('password')) {
                 # code...
-                $user->password = $request->password;
+                $user->password = Hash::make($request->password);
             }
             $user->name = $request->name;
             $user->email = $request->email;
