@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap demo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h1 class="card-title">Data User</h1>
+            </div>
+            <div class="card-body">
+              <div align="right" class="mb-3">
+                <!-- Button trigger modal -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                >
+                  Tambah User
+                </button>
+              </div>
+
+              <!-- Modal -->
+              <div
+                class="modal fade"
+                id="exampleModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        Tambah User
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="" class="form-label">Nama</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="name"
+                          placeholder="Masukkan Nama"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="" class="form-label">Email</label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          id="email"
+                          placeholder="Masukkan Email"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="" class="form-label">Password</label>
+                        <input
+                          type="password"
+                          class="form-control"
+                          id="password"
+                          placeholder="Masukkan Password"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button type="button" id="save" class="btn btn-primary">
+                        Save changes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="editModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        Edit User
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="" class="form-label">Nama</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="edit_name"
+                          placeholder="Masukkan Nama"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="" class="form-label">Email</label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          id="edit_email"
+                          placeholder="Masukkan Email"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="" class="form-label">Password</label>
+                        <input
+                          type="password"
+                          class="form-control"
+                          id="edit_password"
+                          placeholder="Masukkan Password"
+                          required
+                        />
+                        <input type="hidden" id="id_user" />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button
+                        type="button"
+                        id="saveChanges"
+                        class="btn btn-primary"
+                      >
+                        Save changes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const endpoint = "http://localhost:1312/api/user";
+
+      function resetForms() {
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+      }
+
+      async function getUser() {
+        // fetch data dari backend bisa pake fetch(), atau axios() klo axios deps external
+        try {
+          const res = await fetch(endpoint);
+          const users = await res.json();
+          let isi_table = document.getElementById("userTable");
+          isi_table.innerHTML = "";
+          users.data.forEach(function (user, index) {
+            // kenapa user.data.forEach bkn user.forEach? karena ketika kita coba test API di postman data tiap user dibungkus di dalam JSON data lagi (JSON "data" nested di dalam JSON "user")
+            let row = `<tr>
+                          <td>${index + 1}</td>
+                          <td>${user.name}</td>
+                          <td>${user.email}</td>
+                          <td>
+                            <button class='btn btn-success btn-sm' onclick='openEditModal(${
+                              user.id
+                            })'>Edit</button>
+                            <button class='btn btn-danger btn-sm' onclick='deleteUser(${
+                              user.id
+                            })'>Delete</button>
+                          </td>
+              </tr>`;
+            isi_table.innerHTML += row;
+          });
+        } catch (error) {
+          alert("fetch failed!");
+          console.log("error fetch data", error);
+        }
+      }
+
+      async function openEditModal(id) {
+        try {
+          const res = await fetch(`${endpoint}/${id}`);
+          const edit = await res.json();
+          console.log(edit);
+
+          document.getElementById("id_user").value = edit.data.id;
+          document.getElementById("edit_name").value = edit.data.name;
+          document.getElementById("edit_email").value = edit.data.email;
+          document.getElementById("edit_password").value = "";
+
+          new bootstrap.Modal(document.getElementById("editModal")).show();
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+          });
+        }
+      }
+
+      async function deleteUser(id) {
+        const confirm = await Swal.fire({
+          title: "Apakah anda ingin menghapus data ini?",
+          text: "data yang sudah dihapus tidak bisa dikembalikan!",
+          icon: "Warning",
+          showCancelButton: "true",
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#6c757d",
+          confirmButtonColor: "Ya, Hapus!",
+          cancelButtonText: "Batal",
+        });
+
+        if (!confirm.isConfirmed) return;
+
+        try {
+          const res = await fetch(`${endpoint}/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          });
+
+          getUser();
+        } catch (error) {
+          console.log("error", error);
+
+          Swal.fire({
+            icon: "error",
+            title: "Oops..!",
+            text: result.message,
+          });
+        }
+      }
+
+      //click
+      document
+        .getElementById("save")
+        .addEventListener("click", async function () {
+          try {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify({
+                name: name,
+                email: email,
+                password: password,
+              }),
+            });
+
+            const result = res.json();
+            if (res.ok) {
+              Swal.fire({
+                icon: "success",
+                title: "berhasil!",
+                text: result.message,
+                timer: 2000,
+                showConfirmButton: false,
+              });
+            }
+
+            const modal = bootstrap.Modal.getInstance(
+              document.getElementById("exampleModal")
+            );
+
+            modal.hide();
+            getUser();
+            resetForms();
+          } catch (error) {
+            console.log("error", error);
+            Swal.fire({
+              icon: "failed",
+              title: "error!",
+              text: "Gagal",
+            });
+          }
+        });
+
+      document
+        .getElementById("saveChanges")
+        .addEventListener("click", async function () {
+          try {
+            const name = document.getElementById("edit_name").value;
+            const email = document.getElementById("edit_email").value;
+            const password = document.getElementById("edit_password").value;
+            const id = document.getElementById("id_user").value;
+
+            const res = await fetch(`${endpoint}/${id}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify({
+                name: name,
+                email: email,
+                password: password,
+              }),
+            });
+
+            const result = res.json();
+            if (res.ok) {
+              Swal.fire({
+                icon: "success",
+                title: "berhasil!",
+                text: result.message,
+                timer: 2000,
+                showConfirmButton: false,
+              });
+            }
+
+            const modal = bootstrap.Modal.getInstance(
+              document.getElementById("editModal")
+            );
+
+            modal.hide();
+            getUser();
+          } catch (error) {
+            console.log("error", error);
+            Swal.fire({
+              icon: "failed",
+              title: "error!",
+              text: "Gagal",
+            });
+          }
+        });
+
+      getUser();
+    </script>
+  </body>
+</html>
